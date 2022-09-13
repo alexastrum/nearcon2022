@@ -1,4 +1,4 @@
-import { NearBindgen, near, call, view } from 'near-sdk-js';
+import { NearBindgen, near, call, view } from "near-sdk-js";
 
 @NearBindgen({})
 class HelloNear {
@@ -7,6 +7,17 @@ class HelloNear {
   @view({}) // This method is read-only and can be called for free
   get_greeting(): string {
     return this.greeting;
+  }
+
+  get_bookings({}) {
+    return [
+      {
+        booking_id: "nft1id",
+        timestamp: 12345,
+        receipt_id: "nft2id", // or undefined
+        rating: 5, // 1..5
+      },
+    ];
   }
 
   @call({}) // This method changes the state, for which it cost gas
