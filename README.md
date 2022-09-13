@@ -1,1 +1,1 @@
-# nearcon2022
+# Skillshare DAO
