@@ -1,0 +1,11 @@
+{
+  "private": true,
+  "scripts": {
+    "test": "near-workspaces-ava",
+    "test:testnet": "near-workspaces-ava --config ./ava.testnet.config.cjs"
+  },
+  "devDependencies": {
+    "near-workspaces-ava": "1.0.0",
+    "near-api-js": "^0.44.2"
+  }
+}

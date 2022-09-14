@@ -1,22 +1,24 @@
-import { useState } from 'react';
-import { EState, MbButton, MbText } from 'mintbase-ui';
-import { FormProvider, useForm } from 'react-hook-form';
-import { MetadataField } from 'mintbase';
+import { useState } from "react";
+import { EState, MbButton, MbText } from "mintbase-ui";
+import { FormProvider, useForm } from "react-hook-form";
+import { MetadataField } from "mintbase";
 
-import { useWallet } from '../services/providers/WalletProvider';
-import { EInputType } from '../types/types';
-import MintForm from './MintForm';
+import { useWallet } from "../services/providers/WalletProvider";
+import { EInputType } from "../types/types";
+import MintForm from "./MintForm";
+
+const contractId = "dev-1663088155248-91792667980490";
 
 function Main() {
   const { wallet, isConnected, signIn } = useWallet();
   const [isMinting, setIsMinting] = useState(false);
 
-  const store = process.env.NEXT_PUBLIC_STORE_ID || '';
+  const store = process.env.NEXT_PUBLIC_STORE_ID || "";
 
   const methods = useForm({
     defaultValues: {
-      [EInputType.TITLE]: '',
-      [EInputType.DESCRIPTION]: '',
+      [EInputType.TITLE]: "",
+      [EInputType.DESCRIPTION]: "",
       [EInputType.MINT_AMOUNT]: 1,
       [EInputType.CATEGORY]: null,
       [EInputType.LOCATION]: null,
@@ -30,7 +32,7 @@ function Main() {
       [EInputType.SPLIT_REVENUE]: null,
       [EInputType.CUSTOM_KEY_VALUE]: null,
     },
-    mode: 'onSubmit',
+    mode: "onSubmit",
   });
 
   const {
@@ -44,9 +46,10 @@ function Main() {
 
     try {
       const file = getValues(EInputType.MAIN_IMAGE);
-      const { data: fileUploadResult, error: fileError } = await wallet.minter.uploadField(MetadataField.Media, file);
+      const { data: fileUploadResult, error: fileError } =
+        await wallet.minter.uploadField(MetadataField.Media, file);
 
-      console.log('data', fileUploadResult);
+      console.log("data", fileUploadResult);
 
       if (fileError) {
         throw new Error(fileError);
@@ -59,9 +62,10 @@ function Main() {
     try {
       const file = getValues(EInputType.FOREVER_MEDIA);
       if (file) {
-        const { data: fileUploadResult, error: fileError } = await wallet.minter.uploadField(MetadataField.Animation_url, file);
+        const { data: fileUploadResult, error: fileError } =
+          await wallet.minter.uploadField(MetadataField.Animation_url, file);
 
-        console.log('data', fileUploadResult);
+        console.log("data", fileUploadResult);
 
         if (fileError) {
           throw new Error(fileError);
@@ -76,9 +80,10 @@ function Main() {
       const file = getValues(EInputType.FOREVER_DOCUMENT);
 
       if (file) {
-        const { data: fileUploadResult, error: fileError } = await wallet.minter.uploadField(MetadataField.Document, file);
+        const { data: fileUploadResult, error: fileError } =
+          await wallet.minter.uploadField(MetadataField.Document, file);
 
-        console.log('data', fileUploadResult);
+        console.log("data", fileUploadResult);
 
         if (fileError) {
           throw new Error(fileError);
@@ -107,7 +112,7 @@ function Main() {
       description: data[EInputType.DESCRIPTION],
       extra,
       store,
-      type: 'NEP171',
+      type: "NEP171",
       category,
     };
 
@@ -123,26 +128,14 @@ function Main() {
       return;
     }
 
-    await wallet.mint(
-      Number(mintAmount),
-      store.toString(),
-      !royalties ? undefined : royalties.royaltyArgs,
-      !splits ? undefined : splits,
-      category,
-      {
-        callbackUrl: `${window.location.origin}/success`,
-        meta: JSON.stringify({
-          type: 'mint',
-          args: {
-            contractAddress: store.toString(),
-            amount: Number(mintAmount),
-            thingId: `${metadataId}:${store.toString()}`,
-          },
-        }),
-        royaltyPercentage: royalties?.percentage || 0,
+    await wallet.activeAccount.functionCall({
+      contractId,
+      methodName: "mint",
+      args: {
         metadataId,
       },
-    );
+      walletCallbackUrl: `${window.location.origin}/success`,
+    });
     setIsMinting(false);
   };
 
@@ -161,7 +154,6 @@ function Main() {
   if (!isConnected) {
     return (
       <div className="w-full flex flex-col justify-center items-center">
-
         <div className="w-full flex flex-col justify-center items-center space-y-8">
           <div className="flex flex-col justify-center items-center space-y-8">
             <MbText className="text-3xl border-gray-100">Simple Minter</MbText>
@@ -182,7 +174,9 @@ function Main() {
         <div className="w-full mt-4 space-y-4">
           <FormProvider {...methods}>
             <form
-              onSubmit={handleSubmit(onSubmit, (errorMsgs) => console.error(errorMsgs))}
+              onSubmit={handleSubmit(onSubmit, (errorMsgs) =>
+                console.error(errorMsgs)
+              )}
             >
               <MintForm />
               <div className="flex justify-center items-center mt-4">
