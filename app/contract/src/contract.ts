@@ -85,6 +85,7 @@ class HelloNear {
     return this.nft_addr;
   }
 
+  @call({})
   mint({ metadata_id }: { metadata_id: string }) {
     const promise = NearPromise.new(this.nft_addr).functionCall(
       "nft_batch_mint",

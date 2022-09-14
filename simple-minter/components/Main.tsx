@@ -7,7 +7,7 @@ import { useWallet } from "../services/providers/WalletProvider";
 import { EInputType } from "../types/types";
 import MintForm from "./MintForm";
 
-const contractId = "dev-1663088155248-91792667980490";
+const contractId = "dev-1663140048061-91929593694653";
 
 function Main() {
   const { wallet, isConnected, signIn } = useWallet();
@@ -128,13 +128,15 @@ function Main() {
       return;
     }
 
-    await wallet.activeAccount.functionCall({
+    await wallet.activeWallet.account().functionCall({
       contractId,
       methodName: "mint",
       args: {
         metadataId,
       },
       walletCallbackUrl: `${window.location.origin}/success`,
+      attachedDeposit: 1,
+      gas: BigInt("1000000000000000"),
     });
     setIsMinting(false);
   };
