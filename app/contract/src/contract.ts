@@ -12,9 +12,11 @@ import {
 const _100_mNEAR = BigInt("100000000000000000000000");
 const _1_mNEAR = BigInt("1000000000000000000000");
 const FIVE_TGAS = BigInt("50000000000000");
+const _50_TGAS = BigInt("500000000000000");
+const _100_TGAS = BigInt("1000000000000000");
 const _200_TGAS = BigInt("2000000000000000");
 const NO_DEPOSIT = BigInt(0);
-// const NO_ARGS = bytes(JSON.stringify({}));
+const NO_ARGS = bytes(JSON.stringify({}));
 
 interface Skill {
   owner_addr: string;
@@ -85,30 +87,39 @@ class HelloNear {
     return this.nft_addr;
   }
 
-  @call({})
+  @call({ payableFunction: true })
   mint({ metadata_id }: { metadata_id: string }) {
-    const promise = NearPromise.new(this.nft_addr).functionCall(
-      "nft_batch_mint",
-      bytes(
-        JSON.stringify({
-          owner_id: "new_member6578.testnet",
-          metadata: {
-            reference: `https://arweave.net/${metadata_id}`,
-            extra: "ticket",
-          },
-          num_to_mint: 1,
-          royalty_args: {
-            split_between: {
-              "skillsharedao.testnet": 10000,
+    const promise = NearPromise.new(this.nft_addr)
+      .functionCall(
+        "nft_batch_mint",
+        bytes(
+          JSON.stringify({
+            owner_id: "new_member6578.testnet",
+            metadata: {
+              reference: `https://arweave.net/${metadata_id}`,
+              extra: "ticket",
             },
-            percentage: 200,
-          },
-          split_owners: null,
-        })
-      ),
-      _100_mNEAR,
-      _200_TGAS
-    );
+            num_to_mint: 1,
+            royalty_args: {
+              split_between: {
+                "skillsharedao.testnet": 10000,
+              },
+              percentage: 200,
+            },
+            split_owners: null,
+          })
+        ),
+        _100_mNEAR,
+        _100_TGAS
+      )
+      .then(
+        NearPromise.new(near.currentAccountId()).functionCall(
+          "mint_callback",
+          NO_ARGS,
+          NO_DEPOSIT,
+          FIVE_TGAS
+        )
+      );
     // .functionCall(
     //   "nft_approve",
     //   bytes(
@@ -124,16 +135,13 @@ class HelloNear {
     //   _1_mNEAR,
     //   _200_TGAS
     // );
-    // .then(
-    //   NearPromise.new(near.currentAccountId()).functionCall(
-    //     "mint_callback",
-    //     NO_ARGS,
-    //     NO_DEPOSIT,
-    //     FIVE_TGAS
-    //   )
-    // );
 
     return promise.asReturn();
+  }
+
+  @call({ privateFunction: true })
+  mint_callback() {
+    // empty
   }
 
   @view({}) // This method is read-only and can be called for free

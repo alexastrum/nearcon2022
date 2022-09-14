@@ -20,13 +20,13 @@ function Main() {
       [EInputType.TITLE]: "",
       [EInputType.DESCRIPTION]: "",
       [EInputType.MINT_AMOUNT]: 1,
-      [EInputType.CATEGORY]: null,
+      [EInputType.CATEGORY]: "ticket",
       [EInputType.LOCATION]: null,
       [EInputType.MAIN_IMAGE]: null,
       [EInputType.FOREVER_MEDIA]: null,
       [EInputType.FOREVER_DOCUMENT]: null,
       [EInputType.TAGS]: null,
-      [EInputType.WEBSITE]: null,
+      [EInputType.WEBSITE]: "https://skillshare-dao.web.app",
       [EInputType.CALENDAR]: null,
       [EInputType.FOREVER_ROYALTIES]: null,
       [EInputType.SPLIT_REVENUE]: null,
@@ -136,7 +136,7 @@ function Main() {
       },
       walletCallbackUrl: `${window.location.origin}/success`,
       attachedDeposit: 1,
-      gas: BigInt("1000000000000000"),
+      // gas: BigInt("50000000000000"),
     });
     setIsMinting(false);
   };

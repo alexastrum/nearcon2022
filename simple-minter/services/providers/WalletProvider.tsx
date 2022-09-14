@@ -1,4 +1,4 @@
-import { Chain, Network, Wallet } from 'mintbase';
+import { Chain, Network, Wallet } from "mintbase";
 import {
   createContext,
   ReactNode,
@@ -7,9 +7,9 @@ import {
   useContext,
   useCallback,
   useMemo,
-} from 'react';
-import { useRouter } from 'next/router';
-import { WalletKeys } from './constants';
+} from "react";
+import { useRouter } from "next/router";
+import { WalletKeys } from "./constants";
 
 interface IWalletProvider {
   network: Network;
@@ -42,21 +42,21 @@ export const WalletContext = createContext<{
   };
   isConnected: boolean;
   loading: boolean;
-  signIn:() => void;
+  signIn: () => void;
   signOut: () => void;
 }>({
-      wallet: undefined,
-      details: {
-        accountId: '',
-        balance: '',
-        allowance: '',
-        contractName: '',
-      },
-      isConnected: false,
-      loading: true,
-      signIn: () => Promise.resolve(),
-      signOut: () => null,
-    });
+  wallet: undefined,
+  details: {
+    accountId: "",
+    balance: "",
+    allowance: "",
+    contractName: "",
+  },
+  isConnected: false,
+  loading: true,
+  signIn: () => Promise.resolve(),
+  signOut: () => null,
+});
 
 export function WalletProvider({
   network = Network.testnet,
@@ -72,10 +72,10 @@ export function WalletProvider({
     allowance: string;
     contractName: string;
   }>({
-    accountId: '',
-    balance: '',
-    allowance: '',
-    contractName: '',
+    accountId: "",
+    balance: "",
+    allowance: "",
+    contractName: "",
   });
 
   const router = useRouter();
@@ -88,9 +88,9 @@ export function WalletProvider({
     const nearKeystore = `near-api-js:keystore:${accountId}:${network}`;
 
     if (
-      accountId
-      && localStorage.getItem(nearKeystore)
-      && localStorage.getItem(WalletKeys.AUTH_KEY)
+      accountId &&
+      localStorage.getItem(nearKeystore) &&
+      localStorage.getItem(WalletKeys.AUTH_KEY)
     ) {
       localStorage.removeItem(WalletKeys.AUTH_KEY);
       localStorage.removeItem(nearKeystore);
@@ -128,7 +128,10 @@ export function WalletProvider({
     if (!walletInfo) {
       return;
     }
-    await walletInfo.connect({ requestSignIn: true });
+    await walletInfo.connect({
+      requestSignIn: true,
+      contractAddress: "dev-1663088155248-91792667980490",
+    });
   }, [walletInfo]);
 
   const signOut = useCallback(async () => {
@@ -137,7 +140,7 @@ export function WalletProvider({
     }
     walletInfo.disconnect();
 
-    await router.replace('/', undefined, { shallow: true });
+    await router.replace("/", undefined, { shallow: true });
 
     window.location.reload();
   }, [router, walletInfo]);

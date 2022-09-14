@@ -895,18 +895,22 @@ class NearPromise {
 
 }
 
-var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _class, _class2;
+var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _class, _class2;
 
 const _100_mNEAR = BigInt("100000000000000000000000");
 
 BigInt("1000000000000000000000");
 
-BigInt("50000000000000");
+const FIVE_TGAS = BigInt("50000000000000");
 
-const _200_TGAS = BigInt("2000000000000000");
+BigInt("500000000000000");
 
-BigInt(0); // const NO_ARGS = bytes(JSON.stringify({}));
+const _100_TGAS = BigInt("1000000000000000");
 
+BigInt("2000000000000000");
+
+const NO_DEPOSIT = BigInt(0);
+const NO_ARGS = bytes(JSON.stringify({}));
 const MOCK_SKILL = {
   title: "Business coach",
   description: "The one & only!",
@@ -927,7 +931,11 @@ const MOCK_BOOKING = {
     review: "You were great!"
   }
 };
-let HelloNear = (_dec = NearBindgen({}), _dec2 = view({}), _dec3 = call({}), _dec4 = view({}), _dec5 = call({}), _dec6 = call({}), _dec7 = view({}), _dec8 = view({}), _dec9 = call({}), _dec10 = call({}), _dec11 = call({}), _dec(_class = (_class2 = class HelloNear {
+let HelloNear = (_dec = NearBindgen({}), _dec2 = view({}), _dec3 = call({
+  payableFunction: true
+}), _dec4 = call({
+  privateFunction: true
+}), _dec5 = view({}), _dec6 = call({}), _dec7 = call({}), _dec8 = view({}), _dec9 = view({}), _dec10 = call({}), _dec11 = call({}), _dec12 = call({}), _dec(_class = (_class2 = class HelloNear {
   nft_addr = "skillsharedao.mintspace2.testnet";
   bookings = [MOCK_BOOKING];
   skills = [MOCK_SKILL]; // @initialize({})
@@ -963,7 +971,7 @@ let HelloNear = (_dec = NearBindgen({}), _dec2 = view({}), _dec3 = call({}), _de
         percentage: 200
       },
       split_owners: null
-    })), _100_mNEAR, _200_TGAS); // .functionCall(
+    })), _100_mNEAR, _100_TGAS).then(NearPromise.new(currentAccountId()).functionCall("mint_callback", NO_ARGS, NO_DEPOSIT, FIVE_TGAS)); // .functionCall(
     //   "nft_approve",
     //   bytes(
     //     JSON.stringify({
@@ -978,16 +986,11 @@ let HelloNear = (_dec = NearBindgen({}), _dec2 = view({}), _dec3 = call({}), _de
     //   _1_mNEAR,
     //   _200_TGAS
     // );
-    // .then(
-    //   NearPromise.new(near.currentAccountId()).functionCall(
-    //     "mint_callback",
-    //     NO_ARGS,
-    //     NO_DEPOSIT,
-    //     FIVE_TGAS
-    //   )
-    // );
 
     return promise.asReturn();
+  }
+
+  mint_callback() {// empty
   }
 
   // This method is read-only and can be called for free
@@ -1068,7 +1071,7 @@ let HelloNear = (_dec = NearBindgen({}), _dec2 = view({}), _dec3 = call({}), _de
     return booking;
   }
 
-}, (_applyDecoratedDescriptor(_class2.prototype, "get_nft_addr", [_dec2], Object.getOwnPropertyDescriptor(_class2.prototype, "get_nft_addr"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "mint", [_dec3], Object.getOwnPropertyDescriptor(_class2.prototype, "mint"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "get_skills", [_dec4], Object.getOwnPropertyDescriptor(_class2.prototype, "get_skills"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "add_skill", [_dec5], Object.getOwnPropertyDescriptor(_class2.prototype, "add_skill"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "disable_skill", [_dec6], Object.getOwnPropertyDescriptor(_class2.prototype, "disable_skill"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "get_mentor_bookings", [_dec7], Object.getOwnPropertyDescriptor(_class2.prototype, "get_mentor_bookings"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "get_mentee_bookings", [_dec8], Object.getOwnPropertyDescriptor(_class2.prototype, "get_mentee_bookings"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "book_mentoring_session", [_dec9], Object.getOwnPropertyDescriptor(_class2.prototype, "book_mentoring_session"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "start_mentoring_session", [_dec10], Object.getOwnPropertyDescriptor(_class2.prototype, "start_mentoring_session"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "end_mentoring_session", [_dec11], Object.getOwnPropertyDescriptor(_class2.prototype, "end_mentoring_session"), _class2.prototype)), _class2)) || _class);
+}, (_applyDecoratedDescriptor(_class2.prototype, "get_nft_addr", [_dec2], Object.getOwnPropertyDescriptor(_class2.prototype, "get_nft_addr"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "mint", [_dec3], Object.getOwnPropertyDescriptor(_class2.prototype, "mint"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "mint_callback", [_dec4], Object.getOwnPropertyDescriptor(_class2.prototype, "mint_callback"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "get_skills", [_dec5], Object.getOwnPropertyDescriptor(_class2.prototype, "get_skills"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "add_skill", [_dec6], Object.getOwnPropertyDescriptor(_class2.prototype, "add_skill"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "disable_skill", [_dec7], Object.getOwnPropertyDescriptor(_class2.prototype, "disable_skill"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "get_mentor_bookings", [_dec8], Object.getOwnPropertyDescriptor(_class2.prototype, "get_mentor_bookings"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "get_mentee_bookings", [_dec9], Object.getOwnPropertyDescriptor(_class2.prototype, "get_mentee_bookings"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "book_mentoring_session", [_dec10], Object.getOwnPropertyDescriptor(_class2.prototype, "book_mentoring_session"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "start_mentoring_session", [_dec11], Object.getOwnPropertyDescriptor(_class2.prototype, "start_mentoring_session"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "end_mentoring_session", [_dec12], Object.getOwnPropertyDescriptor(_class2.prototype, "end_mentoring_session"), _class2.prototype)), _class2)) || _class);
 function end_mentoring_session() {
   let _state = HelloNear._getState();
 
@@ -1228,6 +1231,27 @@ function get_skills() {
   let _result = _contract.get_skills(_args);
   if (_result !== undefined) if (_result && _result.constructor && _result.constructor.name === "NearPromise") _result.onReturn();else env.value_return(HelloNear._serialize(_result));
 }
+function mint_callback() {
+  let _state = HelloNear._getState();
+
+  if (!_state && HelloNear._requireInit()) {
+    throw new Error("Contract must be initialized");
+  }
+
+  let _contract = HelloNear._create();
+
+  if (_state) {
+    HelloNear._reconstruct(_contract, _state);
+  }
+
+  let _args = HelloNear._getArgs();
+
+  let _result = _contract.mint_callback(_args);
+
+  HelloNear._saveToStorage(_contract);
+
+  if (_result !== undefined) if (_result && _result.constructor && _result.constructor.name === "NearPromise") _result.onReturn();else env.value_return(HelloNear._serialize(_result));
+}
 function mint() {
   let _state = HelloNear._getState();
 
@@ -1268,5 +1292,5 @@ function get_nft_addr() {
   if (_result !== undefined) if (_result && _result.constructor && _result.constructor.name === "NearPromise") _result.onReturn();else env.value_return(HelloNear._serialize(_result));
 }
 
-export { add_skill, book_mentoring_session, disable_skill, end_mentoring_session, get_mentee_bookings, get_mentor_bookings, get_nft_addr, get_skills, mint, start_mentoring_session };
+export { add_skill, book_mentoring_session, disable_skill, end_mentoring_session, get_mentee_bookings, get_mentor_bookings, get_nft_addr, get_skills, mint, mint_callback, start_mentoring_session };
 //# sourceMappingURL=hello_near.js.map

@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect } from "react";
 import {
   EControlStatus,
   IMAGE_TYPES,
@@ -9,20 +9,14 @@ import {
   MbMediaImport,
   MbText,
   MbTextArea,
-} from 'mintbase-ui';
-import { useFormContext } from 'react-hook-form';
-import { EInputType } from '../types/types';
-import { tags } from '../config/constants';
+} from "mintbase-ui";
+import { useFormContext } from "react-hook-form";
+import { EInputType } from "../types/types";
+import { tags } from "../config/constants";
 
 function MintForm() {
-  const {
-    register,
-    watch,
-    setValue,
-    getValues,
-    setError,
-    clearErrors,
-  } = useFormContext();
+  const { register, watch, setValue, getValues, setError, clearErrors } =
+    useFormContext();
 
   const uploadFile = (file: File) => {
     setValue(EInputType.MAIN_IMAGE, file);
@@ -34,10 +28,10 @@ function MintForm() {
     setError(
       EInputType.MAIN_IMAGE,
       {
-        type: 'required',
-        message: 'No image',
+        type: "required",
+        message: "No image",
       },
-      { shouldFocus: true },
+      { shouldFocus: true }
     );
   };
 
@@ -54,10 +48,10 @@ function MintForm() {
     setError(
       EInputType.MAIN_IMAGE,
       {
-        type: 'required',
-        message: 'No image',
+        type: "required",
+        message: "No image",
       },
-      { shouldFocus: true },
+      { shouldFocus: true }
     );
   }, [setError]);
 
@@ -71,7 +65,7 @@ function MintForm() {
           required
           {...register(EInputType.TITLE, {
             required: true,
-            minLength: { value: 1, message: '' },
+            minLength: { value: 1, message: "" },
           })}
         />
       </div>
@@ -100,7 +94,7 @@ function MintForm() {
           uploadedFile={watch(EInputType.MAIN_IMAGE)}
         />
       </div>
-      <div className="mb-4">
+      {/* <div className="mb-4">
         <MbText className="p-med-90 mb-4">Amount of items to mint </MbText>
         <MbAmountInput
           maxAmount={50}
@@ -127,7 +121,7 @@ function MintForm() {
             />
           ))}
         </div>
-      </div>
+      </div> */}
 
       <div className="mb-4">
         <MbInputTags
@@ -137,7 +131,7 @@ function MintForm() {
           onTagsChange={(tagGroup) => {
             setValue(EInputType.TAGS, tagGroup);
           }}
-          onMaxTags={() => console.log('mx')}
+          onMaxTags={() => console.log("mx")}
         />
       </div>
     </>
