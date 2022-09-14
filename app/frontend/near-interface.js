@@ -6,7 +6,8 @@ export class Contract {
   }
 
   async getGreeting() {
-    return await this.wallet.viewMethod({ method: 'get_greeting' });
+    const o = await this.wallet.viewMethod({ method: 'get_skills', args: { addr: "new_member6578.testnet" } });
+    return JSON.stringify(o);
   }
 
   async setGreeting(greeting) {

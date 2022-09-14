@@ -71,6 +71,14 @@ function checkStringIsBytes(str) {
   return str;
 }
 
+function assert(b, str) {
+  if (b) {
+    return;
+  } else {
+    throw Error("assertion failed: " + str);
+  }
+}
+
 /*! scure-base - MIT License (c) 2022 Paul Miller (paulmillr.com) */
 function assertNumber(n) {
   if (!Number.isSafeInteger(n)) throw new Error(`Wrong integer: ${n}`);
@@ -457,12 +465,6 @@ var CurveType;
 
 const U64_MAX = 2n ** 64n - 1n;
 const EVICTED_REGISTER = U64_MAX - 1n;
-function log(...params) {
-  env.log(`${params.map(x => x === undefined ? 'undefined' : x) // Stringify undefined
-  .map(x => typeof x === 'object' ? JSON.stringify(x) : x) // Convert Objects to strings
-  .join(' ')}` // Convert to string
-  );
-}
 function predecessorAccountId() {
   env.predecessor_account_id(0);
   return env.read_register(0);
@@ -486,6 +488,48 @@ function currentAccountId() {
 function input() {
   env.input(0);
   return env.read_register(0);
+}
+function promiseAnd(...promiseIndex) {
+  return env.promise_and(...promiseIndex);
+}
+function promiseBatchCreate(accountId) {
+  return env.promise_batch_create(accountId);
+}
+function promiseBatchThen(promiseIndex, accountId) {
+  return env.promise_batch_then(promiseIndex, accountId);
+}
+function promiseBatchActionCreateAccount(promiseIndex) {
+  env.promise_batch_action_create_account(promiseIndex);
+}
+function promiseBatchActionDeployContract(promiseIndex, code) {
+  env.promise_batch_action_deploy_contract(promiseIndex, code);
+}
+function promiseBatchActionFunctionCall(promiseIndex, methodName, args, amount, gas) {
+  env.promise_batch_action_function_call(promiseIndex, methodName, args, amount, gas);
+}
+function promiseBatchActionTransfer(promiseIndex, amount) {
+  env.promise_batch_action_transfer(promiseIndex, amount);
+}
+function promiseBatchActionStake(promiseIndex, amount, publicKey) {
+  env.promise_batch_action_stake(promiseIndex, amount, publicKey);
+}
+function promiseBatchActionAddKeyWithFullAccess(promiseIndex, publicKey, nonce) {
+  env.promise_batch_action_add_key_with_full_access(promiseIndex, publicKey, nonce);
+}
+function promiseBatchActionAddKeyWithFunctionCall(promiseIndex, publicKey, nonce, allowance, receiverId, methodNames) {
+  env.promise_batch_action_add_key_with_function_call(promiseIndex, publicKey, nonce, allowance, receiverId, methodNames);
+}
+function promiseBatchActionDeleteKey(promiseIndex, publicKey) {
+  env.promise_batch_action_delete_key(promiseIndex, publicKey);
+}
+function promiseBatchActionDeleteAccount(promiseIndex, beneficiaryId) {
+  env.promise_batch_action_delete_account(promiseIndex, beneficiaryId);
+}
+function promiseBatchActionFunctionCallWeight(promiseIndex, methodName, args, amount, gas, weight) {
+  env.promise_batch_action_function_call_weight(promiseIndex, methodName, args, amount, gas, weight);
+}
+function promiseReturn(promiseIdx) {
+  env.promise_return(promiseIdx);
 }
 function storageWrite(key, value) {
   let exist = env.storage_write(key, value, EVICTED_REGISTER);
@@ -570,194 +614,473 @@ function NearBindgen({
   };
 }
 
-var _dec, _dec2, _dec3, _class, _class2;
+class PromiseAction {}
+class CreateAccount extends PromiseAction {
+  add(promise_index) {
+    promiseBatchActionCreateAccount(promise_index);
+  }
 
-BigInt("100000000000000000000000");
+}
+class DeployContract extends PromiseAction {
+  constructor(code) {
+    super();
+    this.code = code;
+  }
+
+  add(promise_index) {
+    promiseBatchActionDeployContract(promise_index, this.code);
+  }
+
+}
+class FunctionCall extends PromiseAction {
+  constructor(function_name, args, amount, gas) {
+    super();
+    this.function_name = function_name;
+    this.args = args;
+    this.amount = amount;
+    this.gas = gas;
+  }
+
+  add(promise_index) {
+    promiseBatchActionFunctionCall(promise_index, this.function_name, this.args, this.amount, this.gas);
+  }
+
+}
+class FunctionCallWeight extends PromiseAction {
+  constructor(function_name, args, amount, gas, weight) {
+    super();
+    this.function_name = function_name;
+    this.args = args;
+    this.amount = amount;
+    this.gas = gas;
+    this.weight = weight;
+  }
+
+  add(promise_index) {
+    promiseBatchActionFunctionCallWeight(promise_index, this.function_name, this.args, this.amount, this.gas, this.weight);
+  }
+
+}
+class Transfer extends PromiseAction {
+  constructor(amount) {
+    super();
+    this.amount = amount;
+  }
+
+  add(promise_index) {
+    promiseBatchActionTransfer(promise_index, this.amount);
+  }
+
+}
+class Stake extends PromiseAction {
+  constructor(amount, public_key) {
+    super();
+    this.amount = amount;
+    this.public_key = public_key;
+  }
+
+  add(promise_index) {
+    promiseBatchActionStake(promise_index, this.amount, this.public_key.data);
+  }
+
+}
+class AddFullAccessKey extends PromiseAction {
+  constructor(public_key, nonce) {
+    super();
+    this.public_key = public_key;
+    this.nonce = nonce;
+  }
+
+  add(promise_index) {
+    promiseBatchActionAddKeyWithFullAccess(promise_index, this.public_key.data, this.nonce);
+  }
+
+}
+class AddAccessKey extends PromiseAction {
+  constructor(public_key, allowance, receiver_id, function_names, nonce) {
+    super();
+    this.public_key = public_key;
+    this.allowance = allowance;
+    this.receiver_id = receiver_id;
+    this.function_names = function_names;
+    this.nonce = nonce;
+  }
+
+  add(promise_index) {
+    promiseBatchActionAddKeyWithFunctionCall(promise_index, this.public_key.data, this.nonce, this.allowance, this.receiver_id, this.function_names);
+  }
+
+}
+class DeleteKey extends PromiseAction {
+  constructor(public_key) {
+    super();
+    this.public_key = public_key;
+  }
+
+  add(promise_index) {
+    promiseBatchActionDeleteKey(promise_index, this.public_key.data);
+  }
+
+}
+class DeleteAccount extends PromiseAction {
+  constructor(beneficiary_id) {
+    super();
+    this.beneficiary_id = beneficiary_id;
+  }
+
+  add(promise_index) {
+    promiseBatchActionDeleteAccount(promise_index, this.beneficiary_id);
+  }
+
+}
+
+class PromiseSingle {
+  constructor(account_id, actions, after, promise_index) {
+    this.account_id = account_id;
+    this.actions = actions;
+    this.after = after;
+    this.promise_index = promise_index;
+  }
+
+  constructRecursively() {
+    if (this.promise_index !== null) {
+      return this.promise_index;
+    }
+
+    let promise_index;
+
+    if (this.after) {
+      promise_index = promiseBatchThen(this.after.constructRecursively(), this.account_id);
+    } else {
+      promise_index = promiseBatchCreate(this.account_id);
+    }
+
+    for (let action of this.actions) {
+      action.add(promise_index);
+    }
+
+    this.promise_index = promise_index;
+    return promise_index;
+  }
+
+}
+
+class PromiseJoint {
+  constructor(promise_a, promise_b, promise_index) {
+    this.promise_a = promise_a;
+    this.promise_b = promise_b;
+    this.promise_index = promise_index;
+  }
+
+  constructRecursively() {
+    if (this.promise_index !== null) {
+      return this.promise_index;
+    }
+
+    let res = promiseAnd(BigInt(this.promise_a.constructRecursively()), BigInt(this.promise_b.constructRecursively()));
+    this.promise_index = res;
+    return res;
+  }
+
+}
+class NearPromise {
+  constructor(subtype, should_return) {
+    this.subtype = subtype;
+    this.should_return = should_return;
+  }
+
+  static new(account_id) {
+    let subtype = new PromiseSingle(account_id, [], null, null);
+    let ret = new NearPromise(subtype, false);
+    return ret;
+  }
+
+  add_action(action) {
+    if (this.subtype instanceof PromiseJoint) {
+      throw new Error("Cannot add action to a joint promise.");
+    } else {
+      this.subtype.actions.push(action);
+    }
+
+    return this;
+  }
+
+  createAccount() {
+    return this.add_action(new CreateAccount());
+  }
+
+  deployContract(code) {
+    return this.add_action(new DeployContract(code));
+  }
+
+  functionCall(function_name, args, amount, gas) {
+    return this.add_action(new FunctionCall(function_name, args, amount, gas));
+  }
+
+  functionCallWeight(function_name, args, amount, gas, weight) {
+    return this.add_action(new FunctionCallWeight(function_name, args, amount, gas, weight));
+  }
+
+  transfer(amount) {
+    return this.add_action(new Transfer(amount));
+  }
+
+  stake(amount, public_key) {
+    return this.add_action(new Stake(amount, public_key));
+  }
+
+  addFullAccessKey(public_key) {
+    return this.addFullAccessKeyWithNonce(public_key, 0n);
+  }
+
+  addFullAccessKeyWithNonce(public_key, nonce) {
+    return this.add_action(new AddFullAccessKey(public_key, nonce));
+  }
+
+  addAccessKey(public_key, allowance, receiver_id, method_names) {
+    return this.addAccessKeyWithNonce(public_key, allowance, receiver_id, method_names, 0n);
+  }
+
+  addAccessKeyWithNonce(public_key, allowance, receiver_id, method_names, nonce) {
+    return this.add_action(new AddAccessKey(public_key, allowance, receiver_id, method_names, nonce));
+  }
+
+  deleteKey(public_key) {
+    return this.add_action(new DeleteKey(public_key));
+  }
+
+  deleteAccount(beneficiary_id) {
+    return this.add_action(new DeleteAccount(beneficiary_id));
+  }
+
+  and(other) {
+    let subtype = new PromiseJoint(this, other, null);
+    let ret = new NearPromise(subtype, false);
+    return ret;
+  }
+
+  then(other) {
+    if (other.subtype instanceof PromiseSingle) {
+      if (other.subtype.after !== null) {
+        throw new Error("Cannot callback promise which is already scheduled after another");
+      }
+
+      other.subtype.after = this;
+    } else {
+      throw new Error("Cannot callback joint promise.");
+    }
+
+    return other;
+  }
+
+  asReturn() {
+    this.should_return = true;
+    return this;
+  }
+
+  constructRecursively() {
+    let res = this.subtype.constructRecursively();
+
+    if (this.should_return) {
+      promiseReturn(res);
+    }
+
+    return res;
+  } // Called by NearBindgen, when return object is a NearPromise instance.
+
+
+  onReturn() {
+    this.asReturn().constructRecursively();
+  }
+
+}
+
+var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _class, _class2;
+
+const _100_mNEAR = BigInt("100000000000000000000000");
 
 BigInt("1000000000000000000000");
 
 BigInt("50000000000000");
 
-BigInt("2000000000000000");
+const _200_TGAS = BigInt("2000000000000000");
 
-BigInt(0);
-bytes(JSON.stringify({}));
-let HelloNear = (_dec = NearBindgen({}), _dec2 = view({}), _dec3 = call({}), _dec(_class = (_class2 = class HelloNear {
+BigInt(0); // const NO_ARGS = bytes(JSON.stringify({}));
+
+const MOCK_SKILL = {
+  title: "Business coach",
+  description: "The one & only!",
+  rate: 10,
+  tags: [],
+  owner_addr: "new_member6578.testnet"
+};
+const MOCK_BOOKING = {
+  mentor_addr: "new_member6578.testnet",
+  mentee_addr: "a2.testnet",
+  skill_id: "0",
+  token_id: "1",
+  timestamp: 12345,
+  notes: "Notes",
+  receipt: {
+    rating: 5,
+    // 1..5
+    review: "You were great!"
+  }
+};
+let HelloNear = (_dec = NearBindgen({}), _dec2 = view({}), _dec3 = view({}), _dec4 = call({}), _dec5 = call({}), _dec6 = view({}), _dec7 = view({}), _dec8 = call({}), _dec9 = call({}), _dec10 = call({}), _dec(_class = (_class2 = class HelloNear {
+  // greeting: string = "skillsharedao.mintspace2.testnet";
+  // @view({}) // This method is read-only and can be called for free
+  // get_greeting(): string {
+  //   return this.greeting;
+  // }
+  // @call({}) // This method changes the state, for which it cost gas
+  // set_greeting({ message }: { message: string }): void {
+  //   // Record a log permanently to the blockchain!
+  //   near.log(`Saving greeting ${message}`);
+  //   this.greeting = message;
+  // }
   nft_addr = "skillsharedao.mintspace2.testnet";
+  bookings = [MOCK_BOOKING];
+  skills = [MOCK_SKILL]; // @initialize({})
+  // init({
+  //   nft_addr = "skillsharedao.mintspace2.testnet2",
+  // }: {
+  //   nft_addr: string;
+  // }) {
+  //   this.nft_addr = nft_addr;
+  //   this.bookings = [MOCK_BOOKING];
+  //   this.skills = [MOCK_SKILL];
+  // }
 
   // This method is read-only and can be called for free
-  get_greeting() {
+  get_nft_addr() {
     return this.nft_addr;
   }
 
-  // This method changes the state, for which it cost gas
-  set_greeting({
-    message
+  mint({
+    metadata_id
   }) {
-    // Record a log permanently to the blockchain!
-    log(`Saving greeting ${message}`);
-    this.nft_addr = message;
+    const promise = NearPromise.new(this.nft_addr).functionCall("nft_batch_mint", bytes(JSON.stringify({
+      owner_id: "new_member6578.testnet",
+      metadata: {
+        reference: `https://arweave.net/${metadata_id}`,
+        extra: "ticket"
+      },
+      num_to_mint: 1,
+      royalty_args: {
+        split_between: {
+          "skillsharedao.testnet": 10000
+        },
+        percentage: 200
+      },
+      split_owners: null
+    })), _100_mNEAR, _200_TGAS); // .functionCall(
+    //   "nft_approve",
+    //   bytes(
+    //     JSON.stringify({
+    //       token_id,
+    //       account_id: "market.mintbase1.near",
+    //       msg: JSON.stringify({
+    //         price: "5000000000000000000000000",
+    //         autotransfer: true,
+    //       }),
+    //     })
+    //   ),
+    //   _1_mNEAR,
+    //   _200_TGAS
+    // );
+    // .then(
+    //   NearPromise.new(near.currentAccountId()).functionCall(
+    //     "mint_callback",
+    //     NO_ARGS,
+    //     NO_DEPOSIT,
+    //     FIVE_TGAS
+    //   )
+    // );
+
+    return promise.asReturn();
   }
 
-}, (_applyDecoratedDescriptor(_class2.prototype, "get_greeting", [_dec2], Object.getOwnPropertyDescriptor(_class2.prototype, "get_greeting"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "set_greeting", [_dec3], Object.getOwnPropertyDescriptor(_class2.prototype, "set_greeting"), _class2.prototype)), _class2)) || _class); // @NearBindgen({})
-// class HelloNear {
-//   nft_addr: string = "skillsharedao.mintspace2.testnet";
-//   // bookings: Booking[] = [MOCK_BOOKING];
-//   // skills: Skill[] = [MOCK_SKILL];
-//   // @initialize({})
-//   // init({
-//   //   nft_addr = "skillsharedao.mintspace2.testnet2",
-//   // }: {
-//   //   nft_addr: string;
-//   // }) {
-//   //   this.nft_addr = nft_addr;
-//   //   this.bookings = [MOCK_BOOKING];
-//   //   this.skills = [MOCK_SKILL];
-//   // }
-//   @view({}) // This method is read-only and can be called for free
-//   get_my_skills(): string {
-//     return this.nft_addr;
-//   }
-//   // @call({}) // This method changes the state, for which it cost gas
-//   // set_greeting({ message }: { message: string }): void {
-//   //   // Record a log permanently to the blockchain!
-//   //   near.log(`Saving greeting ${message}`);
-//   //   this.greeting = message;
-//   // }
-//   // mint({ metadata_id }: { metadata_id: string }) {
-//   //   this.bookings.length;
-//   //   const promise = NearPromise.new(this.nft_addr).functionCall(
-//   //     "nft_batch_mint",
-//   //     bytes(
-//   //       JSON.stringify({
-//   //         owner_id: "new_member6578.testnet",
-//   //         metadata: {
-//   //           reference: `https://arweave.net/${metadata_id}`,
-//   //           extra: "ticket",
-//   //         },
-//   //         num_to_mint: 1,
-//   //         royalty_args: {
-//   //           split_between: {
-//   //             "skillsharedao.testnet": 10000,
-//   //           },
-//   //           percentage: 200,
-//   //         },
-//   //         split_owners: null,
-//   //       })
-//   //     ),
-//   //     _100_mNEAR,
-//   //     _200_TGAS
-//   //   );
-//   //   // .functionCall(
-//   //   //   "nft_approve",
-//   //   //   bytes(
-//   //   //     JSON.stringify({
-//   //   //       token_id,
-//   //   //       account_id: "market.mintbase1.near",
-//   //   //       msg: JSON.stringify({
-//   //   //         price: "5000000000000000000000000",
-//   //   //         autotransfer: true,
-//   //   //       }),
-//   //   //     })
-//   //   //   ),
-//   //   //   _1_mNEAR,
-//   //   //   _200_TGAS
-//   //   // );
-//   //   // .then(
-//   //   //   NearPromise.new(near.currentAccountId()).functionCall(
-//   //   //     "mint_callback",
-//   //   //     NO_ARGS,
-//   //   //     NO_DEPOSIT,
-//   //   //     FIVE_TGAS
-//   //   //   )
-//   //   // );
-//   //   return promise.asReturn();
-//   // }
-//   // @view({}) // This method is read-only and can be called for free
-//   // get_my_skills(): Skill[] {
-//   //   return this.skills.filter(
-//   //     (b) => b.owner_addr === near.signerAccountId() && !b.disabled
-//   //   );
-//   // }
-//   // @call({}) // This method changes the state, for which it cost gas
-//   // add_skill(skill: Skill) {
-//   //   this.skills.push({ ...skill, owner_addr: near.predecessorAccountId() });
-//   // }
-//   // @call({}) // This method changes the state, for which it cost gas
-//   // disable_skill({ skill_id }: { skill_id: string }) {
-//   //   const skill = this.skills[skill_id];
-//   //   assert(
-//   //     skill.owner_addr === near.predecessorAccountId() && !skill.disabled,
-//   //     "Invalid skill_id"
-//   //   );
-//   //   skill.disabled = true;
-//   //   return skill;
-//   // }
-//   // @view({}) // This method is read-only and can be called for free
-//   // get_mentor_bookings(): Booking[] {
-//   //   return this.bookings.filter(
-//   //     (b) => b.mentor_addr === near.signerAccountId()
-//   //   );
-//   // }
-//   // @view({}) // This method is read-only and can be called for free
-//   // get_mentee_bookings(): Booking[] {
-//   //   return this.bookings.filter(
-//   //     (b) => b.mentee_addr === near.signerAccountId()
-//   //   );
-//   // }
-//   // @call({}) // This method changes the state, for which it cost gas
-//   // book_mentoring_session({
-//   //   token_id,
-//   //   notes = "",
-//   //   timestamp = 0,
-//   // }: {
-//   //   token_id: string;
-//   //   notes?: string;
-//   //   timestamp?: number;
-//   // }): Booking {
-//   //   const booking = this.bookings.find((b) => b.token_id === token_id);
-//   //   assert(
-//   //     !booking.mentee_addr ||
-//   //       booking.mentee_addr === near.predecessorAccountId(),
-//   //     "Invalid booking"
-//   //   );
-//   //   // TODO: Check token_id burnt
-//   //   booking.timestamp = timestamp;
-//   //   booking.notes = notes;
-//   //   return booking;
-//   // }
-//   // // Must send the remainder (rate - booking_fee)
-//   // @call({}) // This method changes the state, for which it cost gas
-//   // start_mentoring_session({ token_id }: { token_id: string }): Booking {
-//   //   const booking = this.bookings.find((b) => b.token_id === token_id);
-//   //   assert(
-//   //     booking.mentee_addr === near.predecessorAccountId(),
-//   //     "Invalid booking"
-//   //   );
-//   //   return booking;
-//   // }
-//   // @call({}) // This method changes the state, for which it cost gas
-//   // end_mentoring_session({
-//   //   token_id,
-//   //   rating,
-//   //   review = "",
-//   // }: {
-//   //   token_id: string;
-//   //   rating: number;
-//   //   review?: string;
-//   // }): Booking {
-//   //   const booking = this.bookings.find((b) => b.token_id === token_id);
-//   //   assert(
-//   //     booking.mentee_addr === near.predecessorAccountId(),
-//   //     "Invalid booking"
-//   //   );
-//   //   booking.receipt = { rating, review };
-//   //   // near.log(`Saving greeting ${message}`);
-//   //   return booking;
-//   // }
-// }
+  // This method is read-only and can be called for free
+  get_skills({
+    addr
+  }) {
+    return this.skills.filter(b => b.owner_addr === addr && !b.disabled);
+  }
 
-function set_greeting() {
+  // This method changes the state, for which it cost gas
+  add_skill(skill) {
+    this.skills.push({ ...skill,
+      owner_addr: predecessorAccountId()
+    });
+  }
+
+  // This method changes the state, for which it cost gas
+  disable_skill({
+    skill_id
+  }) {
+    const skill = this.skills[skill_id];
+    assert(skill.owner_addr === predecessorAccountId() && !skill.disabled, "Invalid skill_id");
+    skill.disabled = true;
+    return skill;
+  }
+
+  // This method is read-only and can be called for free
+  get_mentor_bookings({
+    addr
+  }) {
+    return this.bookings.filter(b => b.mentor_addr === addr);
+  }
+
+  // This method is read-only and can be called for free
+  get_mentee_bookings({
+    addr
+  }) {
+    return this.bookings.filter(b => b.mentee_addr === addr);
+  }
+
+  // This method changes the state, for which it cost gas
+  book_mentoring_session({
+    token_id,
+    notes = "",
+    timestamp = 0
+  }) {
+    const booking = this.bookings.find(b => b.token_id === token_id);
+    assert(!booking.mentee_addr || booking.mentee_addr === predecessorAccountId(), "Invalid booking"); // TODO: Check token_id burnt
+
+    booking.timestamp = timestamp;
+    booking.notes = notes;
+    return booking;
+  } // Must send the remainder (rate - booking_fee)
+
+
+  // This method changes the state, for which it cost gas
+  start_mentoring_session({
+    token_id
+  }) {
+    const booking = this.bookings.find(b => b.token_id === token_id);
+    assert(booking.mentee_addr === predecessorAccountId(), "Invalid booking");
+    return booking;
+  }
+
+  // This method changes the state, for which it cost gas
+  end_mentoring_session({
+    token_id,
+    rating,
+    review = ""
+  }) {
+    const booking = this.bookings.find(b => b.token_id === token_id);
+    assert(booking.mentee_addr === predecessorAccountId(), "Invalid booking");
+    booking.receipt = {
+      rating,
+      review
+    }; // near.log(`Saving greeting ${message}`);
+
+    return booking;
+  }
+
+}, (_applyDecoratedDescriptor(_class2.prototype, "get_nft_addr", [_dec2], Object.getOwnPropertyDescriptor(_class2.prototype, "get_nft_addr"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "get_skills", [_dec3], Object.getOwnPropertyDescriptor(_class2.prototype, "get_skills"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "add_skill", [_dec4], Object.getOwnPropertyDescriptor(_class2.prototype, "add_skill"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "disable_skill", [_dec5], Object.getOwnPropertyDescriptor(_class2.prototype, "disable_skill"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "get_mentor_bookings", [_dec6], Object.getOwnPropertyDescriptor(_class2.prototype, "get_mentor_bookings"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "get_mentee_bookings", [_dec7], Object.getOwnPropertyDescriptor(_class2.prototype, "get_mentee_bookings"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "book_mentoring_session", [_dec8], Object.getOwnPropertyDescriptor(_class2.prototype, "book_mentoring_session"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "start_mentoring_session", [_dec9], Object.getOwnPropertyDescriptor(_class2.prototype, "start_mentoring_session"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "end_mentoring_session", [_dec10], Object.getOwnPropertyDescriptor(_class2.prototype, "end_mentoring_session"), _class2.prototype)), _class2)) || _class);
+function end_mentoring_session() {
   let _state = HelloNear._getState();
 
   if (!_state && HelloNear._requireInit()) {
@@ -772,13 +1095,13 @@ function set_greeting() {
 
   let _args = HelloNear._getArgs();
 
-  let _result = _contract.set_greeting(_args);
+  let _result = _contract.end_mentoring_session(_args);
 
   HelloNear._saveToStorage(_contract);
 
   if (_result !== undefined) if (_result && _result.constructor && _result.constructor.name === "NearPromise") _result.onReturn();else env.value_return(HelloNear._serialize(_result));
 }
-function get_greeting() {
+function start_mentoring_session() {
   let _state = HelloNear._getState();
 
   if (!_state && HelloNear._requireInit()) {
@@ -793,9 +1116,147 @@ function get_greeting() {
 
   let _args = HelloNear._getArgs();
 
-  let _result = _contract.get_greeting(_args);
+  let _result = _contract.start_mentoring_session(_args);
+
+  HelloNear._saveToStorage(_contract);
+
+  if (_result !== undefined) if (_result && _result.constructor && _result.constructor.name === "NearPromise") _result.onReturn();else env.value_return(HelloNear._serialize(_result));
+}
+function book_mentoring_session() {
+  let _state = HelloNear._getState();
+
+  if (!_state && HelloNear._requireInit()) {
+    throw new Error("Contract must be initialized");
+  }
+
+  let _contract = HelloNear._create();
+
+  if (_state) {
+    HelloNear._reconstruct(_contract, _state);
+  }
+
+  let _args = HelloNear._getArgs();
+
+  let _result = _contract.book_mentoring_session(_args);
+
+  HelloNear._saveToStorage(_contract);
+
+  if (_result !== undefined) if (_result && _result.constructor && _result.constructor.name === "NearPromise") _result.onReturn();else env.value_return(HelloNear._serialize(_result));
+}
+function get_mentee_bookings() {
+  let _state = HelloNear._getState();
+
+  if (!_state && HelloNear._requireInit()) {
+    throw new Error("Contract must be initialized");
+  }
+
+  let _contract = HelloNear._create();
+
+  if (_state) {
+    HelloNear._reconstruct(_contract, _state);
+  }
+
+  let _args = HelloNear._getArgs();
+
+  let _result = _contract.get_mentee_bookings(_args);
+  if (_result !== undefined) if (_result && _result.constructor && _result.constructor.name === "NearPromise") _result.onReturn();else env.value_return(HelloNear._serialize(_result));
+}
+function get_mentor_bookings() {
+  let _state = HelloNear._getState();
+
+  if (!_state && HelloNear._requireInit()) {
+    throw new Error("Contract must be initialized");
+  }
+
+  let _contract = HelloNear._create();
+
+  if (_state) {
+    HelloNear._reconstruct(_contract, _state);
+  }
+
+  let _args = HelloNear._getArgs();
+
+  let _result = _contract.get_mentor_bookings(_args);
+  if (_result !== undefined) if (_result && _result.constructor && _result.constructor.name === "NearPromise") _result.onReturn();else env.value_return(HelloNear._serialize(_result));
+}
+function disable_skill() {
+  let _state = HelloNear._getState();
+
+  if (!_state && HelloNear._requireInit()) {
+    throw new Error("Contract must be initialized");
+  }
+
+  let _contract = HelloNear._create();
+
+  if (_state) {
+    HelloNear._reconstruct(_contract, _state);
+  }
+
+  let _args = HelloNear._getArgs();
+
+  let _result = _contract.disable_skill(_args);
+
+  HelloNear._saveToStorage(_contract);
+
+  if (_result !== undefined) if (_result && _result.constructor && _result.constructor.name === "NearPromise") _result.onReturn();else env.value_return(HelloNear._serialize(_result));
+}
+function add_skill() {
+  let _state = HelloNear._getState();
+
+  if (!_state && HelloNear._requireInit()) {
+    throw new Error("Contract must be initialized");
+  }
+
+  let _contract = HelloNear._create();
+
+  if (_state) {
+    HelloNear._reconstruct(_contract, _state);
+  }
+
+  let _args = HelloNear._getArgs();
+
+  let _result = _contract.add_skill(_args);
+
+  HelloNear._saveToStorage(_contract);
+
+  if (_result !== undefined) if (_result && _result.constructor && _result.constructor.name === "NearPromise") _result.onReturn();else env.value_return(HelloNear._serialize(_result));
+}
+function get_skills() {
+  let _state = HelloNear._getState();
+
+  if (!_state && HelloNear._requireInit()) {
+    throw new Error("Contract must be initialized");
+  }
+
+  let _contract = HelloNear._create();
+
+  if (_state) {
+    HelloNear._reconstruct(_contract, _state);
+  }
+
+  let _args = HelloNear._getArgs();
+
+  let _result = _contract.get_skills(_args);
+  if (_result !== undefined) if (_result && _result.constructor && _result.constructor.name === "NearPromise") _result.onReturn();else env.value_return(HelloNear._serialize(_result));
+}
+function get_nft_addr() {
+  let _state = HelloNear._getState();
+
+  if (!_state && HelloNear._requireInit()) {
+    throw new Error("Contract must be initialized");
+  }
+
+  let _contract = HelloNear._create();
+
+  if (_state) {
+    HelloNear._reconstruct(_contract, _state);
+  }
+
+  let _args = HelloNear._getArgs();
+
+  let _result = _contract.get_nft_addr(_args);
   if (_result !== undefined) if (_result && _result.constructor && _result.constructor.name === "NearPromise") _result.onReturn();else env.value_return(HelloNear._serialize(_result));
 }
 
-export { get_greeting, set_greeting };
+export { add_skill, book_mentoring_session, disable_skill, end_mentoring_session, get_mentee_bookings, get_mentor_bookings, get_nft_addr, get_skills, start_mentoring_session };
 //# sourceMappingURL=hello_near.js.map

@@ -2910,7 +2910,7 @@ var _nearWallet = require("./near-wallet");
 var _nearInterface = require("./near-interface");
 const reactRoot = (0, _client.createRoot)(document.querySelector("#root"));
 // create the Wallet and the Contract
-const contractId = "dev-1663088155248-91792667980490";
+const contractId = "dev-1663140048061-91929593694653";
 const wallet = new (0, _nearWallet.Wallet)({
     contractId: contractId
 });
@@ -67520,9 +67520,13 @@ class Contract {
         this.wallet = wallet;
     }
     async getGreeting() {
-        return await this.wallet.viewMethod({
-            method: "get_greeting"
+        const o = await this.wallet.viewMethod({
+            method: "get_skills",
+            args: {
+                addr: "new_member6578.testnet"
+            }
         });
+        return JSON.stringify(o);
     }
     async setGreeting(greeting) {
         return await this.wallet.callMethod({
