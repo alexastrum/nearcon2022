@@ -158,8 +158,10 @@ function Main() {
       <div className="w-full flex flex-col justify-center items-center">
         <div className="w-full flex flex-col justify-center items-center space-y-8">
           <div className="flex flex-col justify-center items-center space-y-8">
-            <MbText className="text-3xl border-gray-100">Simple Minter</MbText>
-            <MbText className="text-xl">A simple NFT Minter on Mintbase</MbText>
+            <MbText className="text-3xl border-gray-100">Minter</MbText>
+            <MbText className="text-xl">
+              Simple personal booking tool using Mintbase NFT tickets
+            </MbText>
           </div>
           <div>
             <MbButton onClick={signIn} label="Connect NEAR Wallet to Mint" />

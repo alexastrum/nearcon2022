@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "deploy": "next build && next export && firebase deploy",
     "start": "next start",
     "lint": "next lint",
     "eslint": "eslint \"**/*.+(ts|tsx)\"",
