@@ -28382,7 +28382,7 @@ class Wallet {
     }
 }
 
-},{"near-api-js":"ohc3m","@near-wallet-selector/modal-ui/styles.css":"b4TAP","@near-wallet-selector/modal-ui":"1nDKo","@near-wallet-selector/ledger/assets/ledger-icon.png":"dGAA6","@near-wallet-selector/my-near-wallet/assets/my-near-wallet-icon.png":"aTHwi","@near-wallet-selector/core":"eEY3a","@near-wallet-selector/ledger":"9enQf","@near-wallet-selector/my-near-wallet":"bYYGG","buffer":"fCgem","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@near-wallet-selector/near-wallet":"aOKgp","@near-wallet-selector/near-wallet/assets/near-wallet-icon.png":"haz8R"}],"ohc3m":[function(require,module,exports) {
+},{"near-api-js":"ohc3m","@near-wallet-selector/modal-ui/styles.css":"b4TAP","@near-wallet-selector/modal-ui":"1nDKo","@near-wallet-selector/ledger/assets/ledger-icon.png":"dGAA6","@near-wallet-selector/my-near-wallet/assets/my-near-wallet-icon.png":"aTHwi","@near-wallet-selector/near-wallet/assets/near-wallet-icon.png":"haz8R","@near-wallet-selector/core":"eEY3a","@near-wallet-selector/ledger":"9enQf","@near-wallet-selector/my-near-wallet":"bYYGG","@near-wallet-selector/near-wallet":"aOKgp","buffer":"fCgem","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"ohc3m":[function(require,module,exports) {
 "use strict";
 var __createBinding = this && this.__createBinding || (Object.create ? function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -49882,6 +49882,9 @@ exports.getOrigin = getOrigin;
 },{}],"aTHwi":[function(require,module,exports) {
 module.exports = require("./helpers/bundle-url").getBundleURL("UckoE") + "my-near-wallet-icon.ebfed669.png" + "?" + Date.now();
 
+},{"./helpers/bundle-url":"lgJ39"}],"haz8R":[function(require,module,exports) {
+module.exports = require("./helpers/bundle-url").getBundleURL("UckoE") + "near-wallet-icon.7b545cbf.png" + "?" + Date.now();
+
 },{"./helpers/bundle-url":"lgJ39"}],"eEY3a":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
@@ -67507,10 +67510,7 @@ function setupNearWallet({ walletUrl , iconUrl =icon , deprecated =false  } = {}
         });
 }
 
-},{"@near-wallet-selector/my-near-wallet":"bYYGG","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"haz8R":[function(require,module,exports) {
-module.exports = require("./helpers/bundle-url").getBundleURL("UckoE") + "near-wallet-icon.7b545cbf.png" + "?" + Date.now();
-
-},{"./helpers/bundle-url":"lgJ39"}],"aahG8":[function(require,module,exports) {
+},{"@near-wallet-selector/my-near-wallet":"bYYGG","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"aahG8":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "Contract", ()=>Contract);

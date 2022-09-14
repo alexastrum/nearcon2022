@@ -42,6 +42,35 @@ var PromiseError;
   PromiseError[PromiseError["NotReady"] = 1] = "NotReady";
 })(PromiseError || (PromiseError = {}));
 
+function u8ArrayToBytes(array) {
+  let ret = "";
+
+  for (let e of array) {
+    ret += String.fromCharCode(e);
+  }
+
+  return ret;
+} // TODO this function is a bit broken and the type can't be string
+function bytes(strOrU8Array) {
+  if (typeof strOrU8Array == "string") {
+    return checkStringIsBytes(strOrU8Array);
+  } else if (strOrU8Array instanceof Uint8Array) {
+    return u8ArrayToBytes(strOrU8Array);
+  }
+
+  throw new Error("bytes: expected string or Uint8Array");
+}
+
+function checkStringIsBytes(str) {
+  for (let i = 0; i < str.length; i++) {
+    if (str.charCodeAt(i) > 255) {
+      throw new Error(`string ${str} at index ${i}: ${str[i]} is not a valid byte`);
+    }
+  }
+
+  return str;
+}
+
 /*! scure-base - MIT License (c) 2022 Paul Miller (paulmillr.com) */
 function assertNumber(n) {
   if (!Number.isSafeInteger(n)) throw new Error(`Wrong integer: ${n}`);
@@ -542,12 +571,23 @@ function NearBindgen({
 }
 
 var _dec, _dec2, _dec3, _class, _class2;
+
+BigInt("100000000000000000000000");
+
+BigInt("1000000000000000000000");
+
+BigInt("50000000000000");
+
+BigInt("2000000000000000");
+
+BigInt(0);
+bytes(JSON.stringify({}));
 let HelloNear = (_dec = NearBindgen({}), _dec2 = view({}), _dec3 = call({}), _dec(_class = (_class2 = class HelloNear {
-  greeting = "Hello";
+  nft_addr = "skillsharedao.mintspace2.testnet";
 
   // This method is read-only and can be called for free
   get_greeting() {
-    return this.greeting;
+    return this.nft_addr;
   }
 
   // This method changes the state, for which it cost gas
@@ -556,10 +596,167 @@ let HelloNear = (_dec = NearBindgen({}), _dec2 = view({}), _dec3 = call({}), _de
   }) {
     // Record a log permanently to the blockchain!
     log(`Saving greeting ${message}`);
-    this.greeting = message;
+    this.nft_addr = message;
   }
 
-}, (_applyDecoratedDescriptor(_class2.prototype, "get_greeting", [_dec2], Object.getOwnPropertyDescriptor(_class2.prototype, "get_greeting"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "set_greeting", [_dec3], Object.getOwnPropertyDescriptor(_class2.prototype, "set_greeting"), _class2.prototype)), _class2)) || _class);
+}, (_applyDecoratedDescriptor(_class2.prototype, "get_greeting", [_dec2], Object.getOwnPropertyDescriptor(_class2.prototype, "get_greeting"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "set_greeting", [_dec3], Object.getOwnPropertyDescriptor(_class2.prototype, "set_greeting"), _class2.prototype)), _class2)) || _class); // @NearBindgen({})
+// class HelloNear {
+//   nft_addr: string = "skillsharedao.mintspace2.testnet";
+//   // bookings: Booking[] = [MOCK_BOOKING];
+//   // skills: Skill[] = [MOCK_SKILL];
+//   // @initialize({})
+//   // init({
+//   //   nft_addr = "skillsharedao.mintspace2.testnet2",
+//   // }: {
+//   //   nft_addr: string;
+//   // }) {
+//   //   this.nft_addr = nft_addr;
+//   //   this.bookings = [MOCK_BOOKING];
+//   //   this.skills = [MOCK_SKILL];
+//   // }
+//   @view({}) // This method is read-only and can be called for free
+//   get_my_skills(): string {
+//     return this.nft_addr;
+//   }
+//   // @call({}) // This method changes the state, for which it cost gas
+//   // set_greeting({ message }: { message: string }): void {
+//   //   // Record a log permanently to the blockchain!
+//   //   near.log(`Saving greeting ${message}`);
+//   //   this.greeting = message;
+//   // }
+//   // mint({ metadata_id }: { metadata_id: string }) {
+//   //   this.bookings.length;
+//   //   const promise = NearPromise.new(this.nft_addr).functionCall(
+//   //     "nft_batch_mint",
+//   //     bytes(
+//   //       JSON.stringify({
+//   //         owner_id: "new_member6578.testnet",
+//   //         metadata: {
+//   //           reference: `https://arweave.net/${metadata_id}`,
+//   //           extra: "ticket",
+//   //         },
+//   //         num_to_mint: 1,
+//   //         royalty_args: {
+//   //           split_between: {
+//   //             "skillsharedao.testnet": 10000,
+//   //           },
+//   //           percentage: 200,
+//   //         },
+//   //         split_owners: null,
+//   //       })
+//   //     ),
+//   //     _100_mNEAR,
+//   //     _200_TGAS
+//   //   );
+//   //   // .functionCall(
+//   //   //   "nft_approve",
+//   //   //   bytes(
+//   //   //     JSON.stringify({
+//   //   //       token_id,
+//   //   //       account_id: "market.mintbase1.near",
+//   //   //       msg: JSON.stringify({
+//   //   //         price: "5000000000000000000000000",
+//   //   //         autotransfer: true,
+//   //   //       }),
+//   //   //     })
+//   //   //   ),
+//   //   //   _1_mNEAR,
+//   //   //   _200_TGAS
+//   //   // );
+//   //   // .then(
+//   //   //   NearPromise.new(near.currentAccountId()).functionCall(
+//   //   //     "mint_callback",
+//   //   //     NO_ARGS,
+//   //   //     NO_DEPOSIT,
+//   //   //     FIVE_TGAS
+//   //   //   )
+//   //   // );
+//   //   return promise.asReturn();
+//   // }
+//   // @view({}) // This method is read-only and can be called for free
+//   // get_my_skills(): Skill[] {
+//   //   return this.skills.filter(
+//   //     (b) => b.owner_addr === near.signerAccountId() && !b.disabled
+//   //   );
+//   // }
+//   // @call({}) // This method changes the state, for which it cost gas
+//   // add_skill(skill: Skill) {
+//   //   this.skills.push({ ...skill, owner_addr: near.predecessorAccountId() });
+//   // }
+//   // @call({}) // This method changes the state, for which it cost gas
+//   // disable_skill({ skill_id }: { skill_id: string }) {
+//   //   const skill = this.skills[skill_id];
+//   //   assert(
+//   //     skill.owner_addr === near.predecessorAccountId() && !skill.disabled,
+//   //     "Invalid skill_id"
+//   //   );
+//   //   skill.disabled = true;
+//   //   return skill;
+//   // }
+//   // @view({}) // This method is read-only and can be called for free
+//   // get_mentor_bookings(): Booking[] {
+//   //   return this.bookings.filter(
+//   //     (b) => b.mentor_addr === near.signerAccountId()
+//   //   );
+//   // }
+//   // @view({}) // This method is read-only and can be called for free
+//   // get_mentee_bookings(): Booking[] {
+//   //   return this.bookings.filter(
+//   //     (b) => b.mentee_addr === near.signerAccountId()
+//   //   );
+//   // }
+//   // @call({}) // This method changes the state, for which it cost gas
+//   // book_mentoring_session({
+//   //   token_id,
+//   //   notes = "",
+//   //   timestamp = 0,
+//   // }: {
+//   //   token_id: string;
+//   //   notes?: string;
+//   //   timestamp?: number;
+//   // }): Booking {
+//   //   const booking = this.bookings.find((b) => b.token_id === token_id);
+//   //   assert(
+//   //     !booking.mentee_addr ||
+//   //       booking.mentee_addr === near.predecessorAccountId(),
+//   //     "Invalid booking"
+//   //   );
+//   //   // TODO: Check token_id burnt
+//   //   booking.timestamp = timestamp;
+//   //   booking.notes = notes;
+//   //   return booking;
+//   // }
+//   // // Must send the remainder (rate - booking_fee)
+//   // @call({}) // This method changes the state, for which it cost gas
+//   // start_mentoring_session({ token_id }: { token_id: string }): Booking {
+//   //   const booking = this.bookings.find((b) => b.token_id === token_id);
+//   //   assert(
+//   //     booking.mentee_addr === near.predecessorAccountId(),
+//   //     "Invalid booking"
+//   //   );
+//   //   return booking;
+//   // }
+//   // @call({}) // This method changes the state, for which it cost gas
+//   // end_mentoring_session({
+//   //   token_id,
+//   //   rating,
+//   //   review = "",
+//   // }: {
+//   //   token_id: string;
+//   //   rating: number;
+//   //   review?: string;
+//   // }): Booking {
+//   //   const booking = this.bookings.find((b) => b.token_id === token_id);
+//   //   assert(
+//   //     booking.mentee_addr === near.predecessorAccountId(),
+//   //     "Invalid booking"
+//   //   );
+//   //   booking.receipt = { rating, review };
+//   //   // near.log(`Saving greeting ${message}`);
+//   //   return booking;
+//   // }
+// }
+
 function set_greeting() {
   let _state = HelloNear._getState();
 
