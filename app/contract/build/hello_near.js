@@ -905,9 +905,11 @@ const FIVE_TGAS = BigInt("50000000000000");
 
 BigInt("500000000000000");
 
-const _100_TGAS = BigInt("1000000000000000");
+BigInt("1000000000000000");
 
 BigInt("2000000000000000");
+
+const _2k_TGAS = BigInt("20000000000000000");
 
 const NO_DEPOSIT = BigInt(0);
 const NO_ARGS = bytes(JSON.stringify({}));
@@ -971,7 +973,7 @@ let HelloNear = (_dec = NearBindgen({}), _dec2 = view({}), _dec3 = call({
         percentage: 200
       },
       split_owners: null
-    })), _100_mNEAR, _100_TGAS).then(NearPromise.new(currentAccountId()).functionCall("mint_callback", NO_ARGS, NO_DEPOSIT, FIVE_TGAS)); // .functionCall(
+    })), _100_mNEAR, _2k_TGAS).then(NearPromise.new(currentAccountId()).functionCall("mint_callback", NO_ARGS, NO_DEPOSIT, FIVE_TGAS)); // .functionCall(
     //   "nft_approve",
     //   bytes(
     //     JSON.stringify({

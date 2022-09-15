@@ -130,7 +130,7 @@ export function WalletProvider({
     }
     await walletInfo.connect({
       requestSignIn: true,
-      contractAddress: "dev-1663088155248-91792667980490",
+      contractAddress: "dev-1663156048273-64890295660325",
     });
   }, [walletInfo]);
 

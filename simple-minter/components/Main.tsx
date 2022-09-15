@@ -17,12 +17,12 @@ function Main() {
 
   const methods = useForm({
     defaultValues: {
-      [EInputType.TITLE]: "",
-      [EInputType.DESCRIPTION]: "",
+      [EInputType.TITLE]: "sdgdfg",
+      [EInputType.DESCRIPTION]: "gdggdf",
       [EInputType.MINT_AMOUNT]: 1,
       [EInputType.CATEGORY]: "ticket",
       [EInputType.LOCATION]: null,
-      [EInputType.MAIN_IMAGE]: null,
+      [EInputType.MAIN_IMAGE]: "ddd",
       [EInputType.FOREVER_MEDIA]: null,
       [EInputType.FOREVER_DOCUMENT]: null,
       [EInputType.TAGS]: null,
@@ -45,15 +45,13 @@ function Main() {
     setIsMinting(true);
 
     try {
-      const file = getValues(EInputType.MAIN_IMAGE);
-      const { data: fileUploadResult, error: fileError } =
-        await wallet.minter.uploadField(MetadataField.Media, file);
-
-      console.log("data", fileUploadResult);
-
-      if (fileError) {
-        throw new Error(fileError);
-      }
+      // const file = getValues(EInputType.MAIN_IMAGE);
+      // const { data: fileUploadResult, error: fileError } =
+      //   await wallet.minter.uploadField(MetadataField.Media, file);
+      // console.log("data", fileUploadResult);
+      // if (fileError) {
+      //   throw new Error(fileError);
+      // }
     } catch (error) {
       // handle error here
       console.error(error);
@@ -129,14 +127,14 @@ function Main() {
     }
 
     await wallet.activeWallet.account().functionCall({
-      contractId,
-      methodName: "mint",
+      contractId: "dev-1663156048273-64890295660325", // contractId,
+      methodName: "query_greeting",
       args: {
-        metadataId,
+        //   metadataId,
       },
       walletCallbackUrl: `${window.location.origin}/success`,
       attachedDeposit: 1,
-      // gas: BigInt("50000000000000"),
+      gas: BigInt("300000000000000"),
     });
     setIsMinting(false);
   };

@@ -15,6 +15,7 @@ const FIVE_TGAS = BigInt("50000000000000");
 const _50_TGAS = BigInt("500000000000000");
 const _100_TGAS = BigInt("1000000000000000");
 const _200_TGAS = BigInt("2000000000000000");
+const _2k_TGAS = BigInt("20000000000000000");
 const NO_DEPOSIT = BigInt(0);
 const NO_ARGS = bytes(JSON.stringify({}));
 
@@ -89,37 +90,36 @@ class HelloNear {
 
   @call({ payableFunction: true })
   mint({ metadata_id }: { metadata_id: string }) {
-    const promise = NearPromise.new(this.nft_addr)
-      .functionCall(
-        "nft_batch_mint",
-        bytes(
-          JSON.stringify({
-            owner_id: "new_member6578.testnet",
-            metadata: {
-              reference: `https://arweave.net/${metadata_id}`,
-              extra: "ticket",
+    const promise = NearPromise.new(this.nft_addr).functionCall(
+      "nft_batch_mint",
+      bytes(
+        JSON.stringify({
+          owner_id: "new_member6578.testnet",
+          metadata: {
+            reference: `https://arweave.net/${metadata_id}`,
+            extra: "ticket",
+          },
+          num_to_mint: 1,
+          royalty_args: {
+            split_between: {
+              "skillsharedao.testnet": 10000,
             },
-            num_to_mint: 1,
-            royalty_args: {
-              split_between: {
-                "skillsharedao.testnet": 10000,
-              },
-              percentage: 200,
-            },
-            split_owners: null,
-          })
-        ),
-        _100_mNEAR,
-        _100_TGAS
-      )
-      .then(
-        NearPromise.new(near.currentAccountId()).functionCall(
-          "mint_callback",
-          NO_ARGS,
-          NO_DEPOSIT,
-          FIVE_TGAS
-        )
-      );
+            percentage: 200,
+          },
+          split_owners: null,
+        })
+      ),
+      _100_mNEAR,
+      _2k_TGAS
+    );
+    // .then(
+    //   NearPromise.new(near.currentAccountId()).functionCall(
+    //     "mint_callback",
+    //     NO_ARGS,
+    //     NO_DEPOSIT,
+    //     FIVE_TGAS
+    //   )
+    // );
     // .functionCall(
     //   "nft_approve",
     //   bytes(

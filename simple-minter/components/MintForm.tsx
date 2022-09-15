@@ -44,16 +44,16 @@ function MintForm() {
     setValue(EInputType.CATEGORY, value);
   };
 
-  useEffect(() => {
-    setError(
-      EInputType.MAIN_IMAGE,
-      {
-        type: "required",
-        message: "No image",
-      },
-      { shouldFocus: true }
-    );
-  }, [setError]);
+  // useEffect(() => {
+  //   setError(
+  //     EInputType.MAIN_IMAGE,
+  //     {
+  //       type: "required",
+  //       message: "No image",
+  //     },
+  //     { shouldFocus: true }
+  //   );
+  // }, [setError]);
 
   return (
     <>
@@ -79,7 +79,7 @@ function MintForm() {
           })}
         />
       </div>
-      <div className="mb-4">
+      {/* <div className="mb-4">
         <MbText className="p-med-90 mb-4">Image</MbText>
         <MbMediaImport
           {...register(EInputType.MAIN_IMAGE, {
@@ -93,7 +93,7 @@ function MintForm() {
           maxFileSize={5}
           uploadedFile={watch(EInputType.MAIN_IMAGE)}
         />
-      </div>
+      </div> */}
       {/* <div className="mb-4">
         <MbText className="p-med-90 mb-4">Amount of items to mint </MbText>
         <MbAmountInput
